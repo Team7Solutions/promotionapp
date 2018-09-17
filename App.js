@@ -1,13 +1,53 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {FlatList , ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+
+const SERVER = 'https://team7-server-promotion.herokuapp.com/promotions'
+
 
 export default class App extends React.Component {
+  
+  constructor(props){
+    super(props);
+    this.state ={ isLoading: true}
+  }
+
+  componentDidMount(){
+    return fetch(SERVER)
+    .then((response) => response.json())
+    .then((responseJson) => {
+      console.log("Request: " + SERVER)
+      console.log("Response: " + JSON.stringify(responseJson))
+      this.setState({
+        isLoading: false,
+        dataSource: responseJson,
+      }, function(){
+
+      });
+    })
+    .catch((error) =>{
+      console.error(error);
+    })
+  }
+
   render() {
+
+    if(this.state.isLoading){
+      return(
+        <View style={{flex: 1, padding: 20}}>
+          <ActivityIndicator/>
+        </View>
+      )
+    }
+
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
+      <View style={{flex: 1, paddingTop:20}}>
+        <Text>Start FlatList</Text>
+        <FlatList
+          data={this.state.dataSource.promotions}
+          renderItem={({item}) => <Text>{item.name}, {item.value}</Text>}
+          keyExtractor={({_id}, index) => _id}
+        />
+        <Text>End FlatList </Text>
       </View>
     );
   }
