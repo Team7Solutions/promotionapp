@@ -1,11 +1,54 @@
 import React from 'react';
-import {FlatList , ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  Button
+} from 'react-native';
+import { createStackNavigator } from 'react-navigation';
 
 const SERVER = 'https://team7-server-promotion.herokuapp.com/promotions'
 
-
 export default class App extends React.Component {
-  
+
+  render() {
+    return <MyNavigator />;
+  }
+}
+
+class LoginScreen extends React.Component {
+  static navigationOptions = {
+    headerTitle: 'Log in',
+  };
+
+  render(){
+    return(
+      <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        borderWidth: 25,
+        borderColor: 'orange',
+      }}>
+      <Button
+        title="Log in"
+        onPress={() =>
+          this.props.navigation.navigate('Promotions')
+        }
+      />
+    </View>
+    );
+  }
+    
+}
+
+class PromotionScreen extends React.Component {
+  static navigationOptions = {
+    headerTitle: 'Promotions',
+  };
+
   constructor(props){
     super(props);
     this.state ={ isLoading: true}
@@ -29,14 +72,13 @@ export default class App extends React.Component {
     })
   }
 
-  render() {
-
+  render(){
     if(this.state.isLoading){
       return(
         <View style={{flex: 1, padding: 20}}>
           <ActivityIndicator/>
         </View>
-      )
+      );
     }
 
     return (
@@ -47,11 +89,24 @@ export default class App extends React.Component {
           renderItem={({item}) => <Text>{item.name}, {item.value}</Text>}
           keyExtractor={({_id}, index) => _id}
         />
-        <Text>End FlatList </Text>
+        <Button
+          title="Go back"
+          onPress={() => this.props.navigation.navigate('Login')} />
       </View>
     );
   }
+
 }
+
+const MyNavigator = createStackNavigator(
+  {
+    Login: LoginScreen,
+    Promotions : PromotionScreen,
+  },
+  {
+
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
