@@ -1,63 +1,47 @@
 import React from 'react';
-import {FlatList , ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, View, ScrollView, Button } from 'react-native';
+import { createSwitchNavigator, createStackNavigator, createDrawerNavigator, DrawerItems } from 'react-navigation';
+import Feed from './src/screens/Feed'
+import Login from './src/screens/Login'
+import Loading from './src/screens/Loading'
+import SingUp from './src/screens/SingUp';
 
-const SERVER = 'https://team7-server-promotion.herokuapp.com/promotions'
+const CustomDrawerContentComponent = (props) => (
+    <ScrollView>
+        <SafeAreaView>
+            <DrawerItems {...props} />
+        </SafeAreaView>
+        <View><Button title="Logout" onPress={() => props.navigation.navigate('Auth')} color="#841584" /></View>
+    </ScrollView>
+);
 
+const AppStack = createDrawerNavigator(
+    {
+        Home: Feed
+    }, 
+    {
+        contentComponent: CustomDrawerContentComponent
+    }
+);
+const AuthStack = createStackNavigator({
+    SingIn: Login,
+    SingUp: SingUp
+});
+
+const MyNavigator = createSwitchNavigator(
+    {
+        Loading: Loading,
+        App: AppStack,
+        Auth: AuthStack,
+    },
+    {
+        initialRouteName: 'Loading',
+    }
+);
 
 export default class App extends React.Component {
-  
-  constructor(props){
-    super(props);
-    this.state ={ isLoading: true}
-  }
 
-  componentDidMount(){
-    return fetch(SERVER)
-    .then((response) => response.json())
-    .then((responseJson) => {
-      console.log("Request: " + SERVER)
-      console.log("Response: " + JSON.stringify(responseJson))
-      this.setState({
-        isLoading: false,
-        dataSource: responseJson,
-      }, function(){
-
-      });
-    })
-    .catch((error) =>{
-      console.error(error);
-    })
-  }
-
-  render() {
-
-    if(this.state.isLoading){
-      return(
-        <View style={{flex: 1, padding: 20}}>
-          <ActivityIndicator/>
-        </View>
-      )
+    render() {
+        return <MyNavigator />;
     }
-
-    return (
-      <View style={{flex: 1, paddingTop:20}}>
-        <Text>Start FlatList</Text>
-        <FlatList
-          data={this.state.dataSource.promotions}
-          renderItem={({item}) => <Text>{item.name}, {item.value}</Text>}
-          keyExtractor={({_id}, index) => _id}
-        />
-        <Text>End FlatList </Text>
-      </View>
-    );
-  }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
