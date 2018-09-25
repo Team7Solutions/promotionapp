@@ -1,10 +1,10 @@
 import React from 'react';
 import { FlatList, StyleSheet, View, Platform } from 'react-native';
 import { Header, Left, Body, Right, Icon } from 'native-base'
+import { SearchBar } from 'react-native-elements'
 import Promotion from '../components/Promotion'
 
 const SERVER = 'https://team7-server-promotion.herokuapp.com/promotions'
-
 
 export default class Feed extends React.Component {
 
@@ -31,6 +31,10 @@ export default class Feed extends React.Component {
 
         return (
             <View style={styles.container}>
+            <SearchBar
+  //            onChangeText={someMethod}
+  //            onClear={someMethod}
+              placeholder='Type Here...' />
                 <Header transparent>
                     <Left>
                         <Icon name="menu" onPress={() => this.props.navigation.openDrawer()} />
